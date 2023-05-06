@@ -5,6 +5,7 @@ import org.example.application.fabric.FabricImpl;
 import org.example.jira.JiraProvider;
 import org.example.jira.TicketRequest;
 import org.example.midpoint.MidpointProvider;
+import org.example.midpoint.MidpointProviderImpl;
 import org.example.midpoint.exceptions.BadResource;
 import org.example.midpoint.exceptions.BadUser;
 
@@ -21,7 +22,7 @@ import java.util.TimerTask;
 
 public class Main {
 
-    public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
+    public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException, BadResource, BadUser {
 
         Fabric fabric = new FabricImpl();
         JiraProvider jiraProvider = fabric.getJiraProvider();
@@ -34,12 +35,12 @@ public class Main {
                 try {
                     Iterable<TicketRequest> ticketRequests = jiraProvider.getTickets();
 
-                    for (TicketRequest ticketRequest : ticketRequests){
-                        switch (ticketRequest.getAction()){
+                    for (TicketRequest ticketRequest : ticketRequests) {
+                        switch (ticketRequest.getAction()) {
                             case DISABLE ->
-                                midpointProvider.disableUser(ticketRequest.getUserName(), ticketRequest.getResourceName());
+                                    midpointProvider.disableUser(ticketRequest.getUserName(), ticketRequest.getResourceName());
                             case ACTIVATE ->
-                                midpointProvider.activateUser(ticketRequest.getUserName(), ticketRequest.getResourceName());
+                                    midpointProvider.activateUser(ticketRequest.getUserName(), ticketRequest.getResourceName());
 
                         }
                     }
@@ -53,6 +54,8 @@ public class Main {
                 }
 
             }
-        },0, 5000);
+        }, 0, 5000);
+
+
     }
 }
