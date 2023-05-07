@@ -38,9 +38,9 @@ public class Main {
                     for (TicketRequest ticketRequest : ticketRequests) {
                         switch (ticketRequest.getAction()) {
                             case DISABLE ->
-                                    midpointProvider.disableUser(ticketRequest.getUserName(), ticketRequest.getResourceName());
+                                    midpointProvider.disableAccount(ticketRequest.getUserName(), ticketRequest.getResourceName());
                             case ACTIVATE ->
-                                    midpointProvider.activateUser(ticketRequest.getUserName(), ticketRequest.getResourceName());
+                                    midpointProvider.enableAccount(ticketRequest.getUserName(), ticketRequest.getResourceName());
 
                         }
                     }

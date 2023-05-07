@@ -2,7 +2,7 @@ package org.example.midpoint.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class User {
+public class MidpointObject {
     @SerializedName("oid")
     String oid;
 

@@ -6,9 +6,9 @@ import java.util.List;
 
 public class Obj {
     @SerializedName("object")
-    List<User> userList;
+    List<MidpointObject> midpointObjectList;
 
-    public List<User> getUserList() {
-        return userList;
+    public List<MidpointObject> getMidpointObjectsList() {
+        return midpointObjectList;
     }
 }
