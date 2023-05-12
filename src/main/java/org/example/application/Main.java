@@ -1,5 +1,6 @@
 package org.example.application;
 
+import org.example.application.fabric.Config;
 import org.example.application.fabric.Fabric;
 import org.example.application.fabric.FabricImpl;
 import org.example.jira.JiraProvider;
@@ -23,6 +24,8 @@ import java.util.TimerTask;
 public class Main {
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException, BadResource, BadUser {
+
+        Config.loadConfig();
 
         Fabric fabric = new FabricImpl();
         JiraProvider jiraProvider = fabric.getJiraProvider();

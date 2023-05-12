@@ -1,6 +1,7 @@
 package org.example.midpoint;
 
 import okhttp3.Credentials;
+import org.example.application.fabric.Config;
 import org.example.midpoint.exceptions.BadResource;
 import org.example.midpoint.exceptions.BadUser;
 import org.example.midpoint.models.GetMidpointObjectsResponse;
@@ -14,13 +15,12 @@ import java.util.List;
 public class MidpointProviderImpl implements MidpointProvider {
     private final Retrofit retrofit;
     private final MidpointWebAPI midpointWebAPI;
-    private final String baseUrl = Config.MIDPOINT_BASE_URL;
+    private final String baseUrl = org.example.application.fabric.Config.MIDPOINT_BASE_URL;
     private final String enableUserBody = Config.ENABLE_USER_BODY;
     private final String disableUserBody = Config.DISABLE_USER_BODY;
     private final String authToken;
 
     public MidpointProviderImpl() {
-
         this.retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build();
         this.midpointWebAPI = retrofit.create(MidpointWebAPI.class);
         authToken = Credentials.basic(Config.MIDPOINT_LOGIN, Config.MIDPOINT_PASSWORD);

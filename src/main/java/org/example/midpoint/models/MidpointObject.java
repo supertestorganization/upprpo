@@ -16,4 +16,5 @@ public class MidpointObject {
     public String getOid() {
         return oid;
     }
+
 }
