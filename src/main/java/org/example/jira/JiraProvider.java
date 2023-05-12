@@ -2,8 +2,14 @@ package org.example.jira;
 
 
 import java.io.IOException;
-import java.util.Collection;
 
 public interface JiraProvider {
-    Iterable<TicketRequest> getTickets() throws IOException;
+    Iterable<Ticket> getTickets() throws IOException;
+
+    void makeTicketDone(String ticketKey) throws IOException;
+
+    void makeTicketFailed(String ticketKey) throws IOException;
+
+    void changeTicketDescription(String ticketKey, String newDescription) throws IOException;
+
 }
