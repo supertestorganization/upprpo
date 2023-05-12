@@ -1,9 +1,10 @@
 package org.example.jira;
 
-public interface TicketRequest {
+public interface Ticket {
 
-    public enum Action{DISABLE, ACTIVATE}
+    enum Action{DISABLE, ENABLE}
 
+    String getKey();
     String getUserName();
     String getResourceName();
     Action getAction();
