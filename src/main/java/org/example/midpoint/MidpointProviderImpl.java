@@ -27,36 +27,40 @@ public class MidpointProviderImpl implements MidpointProvider {
     }
 
     @Override
-    public void enableAccount(String userName, String resourceName) throws BadResource, BadUser, IOException {
+    public OperationResult activateAccount(String userName, String resourceName) throws IOException {
         String resourceOid = getResourceOid(resourceName);
         if (resourceOid == null) {
-            throw new BadResource();
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "Resource not found");
         }
-
+        //TODO: implement
+        return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "");
     }
 
     @Override
-    public void disableAccount(String userName, String resourceName) throws BadResource, BadUser, IOException {
-
+    public OperationResult disableAccount(String userName, String resourceName) throws IOException {
+        //TODO: implement
+        return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "");
     }
 
 
     @Override
-    public void disableUser(String userName) throws BadUser, IOException {
+    public OperationResult disableUser(String userName) throws IOException {
         String userOid = getUserOid(userName);
         if (userOid == null) {
-            throw new BadUser();
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User not found");
         }
         midpointWebAPI.postChangeUserActivation(authToken, userOid, disableUserBody);
+        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User disabled");
     }
 
     @Override
-    public void enableUser(String userName) throws BadUser, IOException {
+    public OperationResult activateUser(String userName) throws IOException {
         String userOid = getUserOid(userName);
         if (userOid == null) {
-            throw new BadUser();
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User not found");
         }
         midpointWebAPI.postChangeUserActivation(authToken, userOid, enableUserBody);
+        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User enabled");
     }
 
     private String getUserOid(String name) throws IOException {

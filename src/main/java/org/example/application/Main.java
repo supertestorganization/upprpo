@@ -43,16 +43,12 @@ public class Main {
                             case DISABLE ->
                                     midpointProvider.disableAccount(ticketRequest.getUserName(), ticketRequest.getResourceName());
                             case ACTIVATE ->
-                                    midpointProvider.enableAccount(ticketRequest.getUserName(), ticketRequest.getResourceName());
+                                    midpointProvider.activateAccount(ticketRequest.getUserName(), ticketRequest.getResourceName());
 
                         }
                     }
 
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (BadResource e) {
-                    throw new RuntimeException(e);
-                } catch (BadUser e) {
                     throw new RuntimeException(e);
                 }
 
