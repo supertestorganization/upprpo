@@ -2,6 +2,7 @@ package org.example.application.fabric;
 
 import org.example.jira.JiraProvider;
 import org.example.midpoint.MidpointProvider;
+import org.example.midpoint.MidpointProviderImpl;
 
 public class FabricImpl implements Fabric{
 
@@ -12,6 +13,6 @@ public class FabricImpl implements Fabric{
 
     @Override
     public MidpointProvider getMidpointProvider() {
-        return null;
+        return new MidpointProviderImpl();
     }
 }
