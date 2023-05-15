@@ -19,10 +19,11 @@ public interface MidpointWebAPI {
         @Header("Authorization") String authHeader
     );
 
+    @Headers({"Accept: application/json"})
     @POST("users/{oid}")
     Call<PostPropertyResponse> postChangeUserActivation (
             @Header("Authorization") String authHeader,
             @Path("oid") String userOid,
             @Body String body
-                );
+    );
 }

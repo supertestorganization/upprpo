@@ -32,7 +32,9 @@ public class MidpointProviderImpl implements MidpointProvider {
         if (resourceOid == null) {
             return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "Resource not found");
         }
-        //TODO: implement
+        List<MidpointObject> users = getUsers().getObj().getMidpointObjectsList();
+        String userOid = findOid(userName, users);
+
         return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "");
     }
 
