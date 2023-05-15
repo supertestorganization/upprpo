@@ -1,5 +1,6 @@
 package org.example.midpoint;
 
+import okhttp3.RequestBody;
 import org.example.midpoint.models.GetMidpointResourcesResponse;
 import org.example.midpoint.models.GetMidpointUserResponse;
 import org.example.midpoint.models.PostPropertyResponse;
@@ -20,11 +21,14 @@ public interface MidpointWebAPI {
         @Header("Authorization") String authHeader
     );
 
-    @Headers({"Accept: application/json"})
+
     @POST("users/{oid}")
-    Call<PostPropertyResponse> postChangeUserActivation (
+    Call<PostPropertyResponse> postChangeActivation(
             @Header("Authorization") String authHeader,
             @Path("oid") String userOid,
-            @Body String body
+            @Body RequestBody body
     );
+
+
+
 }

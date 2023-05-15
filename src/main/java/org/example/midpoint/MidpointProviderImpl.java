@@ -1,79 +1,117 @@
 package org.example.midpoint;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import okhttp3.Credentials;
-import org.example.application.fabric.Config;
-import org.example.midpoint.models.GetMidpointResourcesResponse;
-import org.example.midpoint.models.GetMidpointUserResponse;
-import org.example.midpoint.models.MidpointResource;
-import org.example.midpoint.models.MidpointUser;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
+import org.example.application.fabric.MidpointConfig;
+import org.example.midpoint.models.*;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class MidpointProviderImpl implements MidpointProvider {
-    private final Retrofit retrofit;
+    Retrofit retrofit;
     private final MidpointWebAPI midpointWebAPI;
-    private final String baseUrl = org.example.application.fabric.Config.MIDPOINT_BASE_URL;
-    private final String enableUserBody = Config.ENABLE_USER_BODY;
-    private final String disableUserBody = Config.DISABLE_USER_BODY;
+    private final String baseUrl = MidpointConfig.MIDPOINT_BASE_URL;
+    private final String enableUserBody = MidpointConfig.ENABLE_USER_BODY;
+    private final String disableUserBody = MidpointConfig.DISABLE_USER_BODY;
+    private final String enableAccountBody = MidpointConfig.ENABLE_ACCOUNT_BODY;
+    private final String disableAccountBody = MidpointConfig.DISABLE_ACCOUNT_BODY;
     private final String authToken;
+    private final String noUserFail = "User not found";
+    private final String noResourceFail = "Resource not found";
+    private final String mediaFormat = "application/json; charset=utf-8";
 
     public MidpointProviderImpl() {
-        this.retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build();
+        Type assignmentType = new TypeToken<List<Assignment>>() {}.getType();
+        Gson gson = new GsonBuilder().registerTypeAdapter(assignmentType, new AssignmentsAdapter()).create();
+        this.retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create(gson)).build();
         this.midpointWebAPI = retrofit.create(MidpointWebAPI.class);
-        authToken = Credentials.basic(Config.MIDPOINT_LOGIN, Config.MIDPOINT_PASSWORD);
+        authToken = Credentials.basic(MidpointConfig.MIDPOINT_LOGIN, MidpointConfig.MIDPOINT_PASSWORD);
     }
 
     @Override
     public OperationResult activateAccount(String userName, String resourceName) throws IOException {
-      /*  String resourceOid = getResourceOid(resourceName);
-        if (resourceOid == null) {
-            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "Resource not found");
-        }
-       */
-        List<MidpointUser> users = getUsers().getObj().getMidpointObjectsList();
-        String userOid = findUserOid(userName, users);
 
-        return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "");
+        MidpointUser user = getUser(userName);
+        if (user == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noUserFail);
+        }
+        MidpointResource resource = getResourceByName(resourceName);
+        if (resource == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noResourceFail);
+        }
+        Integer assignmentId = getAssignmentId(resource.getResourceOid(), user.getAssignmentList());
+        if (assignmentId == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User %s does not have assignment for resource %s".formatted(userName, resourceName));
+        }
+        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), enableAccountBody.formatted(assignmentId));
+        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
+        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "Account in %s of user %s is enabled".formatted(resourceName, userName));
     }
 
     @Override
     public OperationResult disableAccount(String userName, String resourceName) throws IOException {
-        //TODO: implement
-        return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "");
+        MidpointUser user = getUser(userName);
+        if (user == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noUserFail);
+        }
+        MidpointResource resource = getResourceByName(resourceName);
+        if (resource == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noResourceFail);
+        }
+        if (user.getAssignmentList() == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "this user has no accounts");
+        }
+        Integer assignmentId = getAssignmentId(resource.getResourceOid(), user.getAssignmentList());
+        if (assignmentId == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User %s does not have assignment for resource %s".formatted(userName, resourceName));
+        }
+        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), disableAccountBody.formatted(assignmentId));
+        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
+        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "Account in %s of user %s is disabled".formatted(resourceName, userName));
     }
+
+
 
 
     @Override
     public OperationResult disableUser(String userName) throws IOException {
-        String userOid = getUserOid(userName);
-        if (userOid == null) {
-            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User not found");
+        MidpointUser user = getUser(userName);
+        if (user == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noUserFail);
         }
-        midpointWebAPI.postChangeUserActivation(authToken, userOid, disableUserBody);
+        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), disableUserBody);
+        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
         return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User disabled");
     }
 
     @Override
     public OperationResult activateUser(String userName) throws IOException {
-        String userOid = getUserOid(userName);
-        if (userOid == null) {
-            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User not found");
+        MidpointUser user = getUser(userName);
+        if (user == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noUserFail);
         }
-        midpointWebAPI.postChangeUserActivation(authToken, userOid, enableUserBody);
+        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), enableUserBody);
+        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
         return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User enabled");
     }
 
-    private String getUserOid(String name) throws IOException {
+    private MidpointUser getUser(String name) throws IOException {
         List<MidpointUser> userList = getUsers().getObj().getMidpointObjectsList();
-        return findUserOid(name, userList);
+        return findUserByName(name, userList);
     }
 
-    private String getResourceOid(String name) throws IOException {
+    private MidpointResource getResourceByName(String name) throws IOException {
         List<MidpointResource> resourcesList = getResources().getObjRes().getMidpointResources();
-        return findResourceOid(name, resourcesList);
+        return findResource(name, resourcesList);
     }
 
 
@@ -86,19 +124,28 @@ public class MidpointProviderImpl implements MidpointProvider {
         return midpointWebAPI.getResources(authToken).execute().body();
     }
 
-    private String findUserOid(String name, List<MidpointUser> userList) {
+    private MidpointUser findUserByName(String name, List<MidpointUser> userList) {
         for (MidpointUser midpointUser : userList) {
             if (midpointUser.getName().equals(name)) {
-                return midpointUser.getOid();
+                return midpointUser;
             }
         }
             return null;
     }
 
-    private String findResourceOid(String name, List<MidpointResource> resourceList) {
+    private MidpointResource findResource(String name, List<MidpointResource> resourceList) {
         for (MidpointResource midpointResource : resourceList) {
             if (midpointResource.getResourceName().equals(name)) {
-                return midpointResource.getResourceOid();
+                return midpointResource;
+            }
+        }
+        return null;
+    }
+
+    private Integer getAssignmentId(String resourceOid, List<Assignment> assignments) {
+        for (Assignment assignment: assignments) {
+            if (assignment.getConstruction().getResourceRef().getOid().equals(resourceOid)) {
+                return assignment.getId();
             }
         }
         return null;

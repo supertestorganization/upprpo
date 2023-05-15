@@ -12,6 +12,10 @@ public class Assignment {
     @SerializedName("activation")
     AssignmentActivation activation;
 
+    public Integer getId() {
+        return id;
+    }
+
     public AssignmentActivation getActivation() {
         return activation;
     }
