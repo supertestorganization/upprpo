@@ -3,6 +3,9 @@ package org.example.midpoint.models;
 import com.google.gson.annotations.SerializedName;
 
 public class Assignment {
+
+    @SerializedName("@id")
+    Integer id;
     @SerializedName("construction")
     AssignmentConstruction construction;
 

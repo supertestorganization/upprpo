@@ -2,10 +2,10 @@ package org.example.midpoint;
 
 import okhttp3.Credentials;
 import org.example.application.fabric.Config;
-import org.example.midpoint.exceptions.BadResource;
-import org.example.midpoint.exceptions.BadUser;
-import org.example.midpoint.models.GetMidpointObjectsResponse;
-import org.example.midpoint.models.MidpointObject;
+import org.example.midpoint.models.GetMidpointResourcesResponse;
+import org.example.midpoint.models.GetMidpointUserResponse;
+import org.example.midpoint.models.MidpointResource;
+import org.example.midpoint.models.MidpointUser;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -28,12 +28,13 @@ public class MidpointProviderImpl implements MidpointProvider {
 
     @Override
     public OperationResult activateAccount(String userName, String resourceName) throws IOException {
-        String resourceOid = getResourceOid(resourceName);
+      /*  String resourceOid = getResourceOid(resourceName);
         if (resourceOid == null) {
             return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "Resource not found");
         }
-        List<MidpointObject> users = getUsers().getObj().getMidpointObjectsList();
-        String userOid = findOid(userName, users);
+       */
+        List<MidpointUser> users = getUsers().getObj().getMidpointObjectsList();
+        String userOid = findUserOid(userName, users);
 
         return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "");
     }
@@ -66,32 +67,41 @@ public class MidpointProviderImpl implements MidpointProvider {
     }
 
     private String getUserOid(String name) throws IOException {
-        List<MidpointObject> userList = getUsers().getObj().getMidpointObjectsList();
-        return findOid(name, userList);
+        List<MidpointUser> userList = getUsers().getObj().getMidpointObjectsList();
+        return findUserOid(name, userList);
     }
 
     private String getResourceOid(String name) throws IOException {
-        List<MidpointObject> resourcesList = getResources().getObj().getMidpointObjectsList();
-        return findOid(name, resourcesList);
+        List<MidpointResource> resourcesList = getResources().getObjRes().getMidpointResources();
+        return findResourceOid(name, resourcesList);
     }
 
 
-    private GetMidpointObjectsResponse getUsers() throws IOException {
+    private GetMidpointUserResponse getUsers() throws IOException {
 
         return midpointWebAPI.getUsers(authToken).execute().body();
     }
 
-    private GetMidpointObjectsResponse getResources() throws IOException {
+    private GetMidpointResourcesResponse getResources() throws IOException {
         return midpointWebAPI.getResources(authToken).execute().body();
     }
 
-    private String findOid(String name, List<MidpointObject> objectList) {
-        for (MidpointObject midpointObject: objectList) {
-            if (midpointObject.getName().equals(name)) {
-                return midpointObject.getOid();
+    private String findUserOid(String name, List<MidpointUser> userList) {
+        for (MidpointUser midpointUser : userList) {
+            if (midpointUser.getName().equals(name)) {
+                return midpointUser.getOid();
             }
         }
             return null;
+    }
+
+    private String findResourceOid(String name, List<MidpointResource> resourceList) {
+        for (MidpointResource midpointResource : resourceList) {
+            if (midpointResource.getResourceName().equals(name)) {
+                return midpointResource.getResourceOid();
+            }
+        }
+        return null;
     }
 
 }
