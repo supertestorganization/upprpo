@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.Credentials;
-import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 import org.example.application.fabric.MidpointConfig;
 import org.example.midpoint.models.*;
 import retrofit2.Retrofit;
@@ -48,13 +46,10 @@ public class MidpointProviderImpl implements MidpointProvider {
         if (resource == null) {
             return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noResourceFail);
         }
-        Integer assignmentId = getAssignmentId(resource.getResourceOid(), user.getAssignmentList());
-        if (assignmentId == null) {
-            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User %s does not have assignment for resource %s".formatted(userName, resourceName));
+        if (user.getAssignmentList() == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "this user has no accounts");
         }
-        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), enableAccountBody.formatted(assignmentId));
-        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
-        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "Account in %s of user %s is enabled".formatted(resourceName, userName));
+        return changeAccountActivation(user, resource, enableAccountBody);
     }
 
     @Override
@@ -70,38 +65,38 @@ public class MidpointProviderImpl implements MidpointProvider {
         if (user.getAssignmentList() == null) {
             return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "this user has no accounts");
         }
-        Integer assignmentId = getAssignmentId(resource.getResourceOid(), user.getAssignmentList());
-        if (assignmentId == null) {
-            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User %s does not have assignment for resource %s".formatted(userName, resourceName));
-        }
-        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), disableAccountBody.formatted(assignmentId));
-        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
-        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "Account in %s of user %s is disabled".formatted(resourceName, userName));
+        return changeAccountActivation(user, resource, disableAccountBody);
     }
 
-
+    private OperationResult changeAccountActivation(MidpointUser user, MidpointResource resource, String disableAccountBody) throws IOException {
+        Integer assignmentId = getAssignmentId(resource.getResourceOid(), user.getAssignmentList());
+        if (assignmentId == null) {
+            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "User %s does not have assignment for resource %s".formatted(user.getName(), resource.getResourceName()));
+        }
+        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), disableAccountBody.formatted(assignmentId));
+        midpointWebAPI.postChangeUser(authToken, user.getOid(), body).execute();
+        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "Account in %s of user %s is disabled".formatted(resource.getResourceName(), user.getName()));
+    }
 
 
     @Override
     public OperationResult disableUser(String userName) throws IOException {
-        MidpointUser user = getUser(userName);
-        if (user == null) {
-            return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noUserFail);
-        }
-        var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), disableUserBody);
-        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
-        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User disabled");
+        return changeUserActivation(userName, disableUserBody);
     }
 
     @Override
     public OperationResult activateUser(String userName) throws IOException {
+        return changeUserActivation(userName, enableUserBody);
+    }
+
+    private OperationResult changeUserActivation(String userName, String enableUserBody) throws IOException {
         MidpointUser user = getUser(userName);
         if (user == null) {
             return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, noUserFail);
         }
         var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), enableUserBody);
-        midpointWebAPI.postChangeActivation(authToken, user.getOid(), body).execute();
-        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User enabled");
+        midpointWebAPI.postChangeUser(authToken, user.getOid(), body).execute();
+        return  new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User enabled");
     }
 
     private MidpointUser getUser(String name) throws IOException {

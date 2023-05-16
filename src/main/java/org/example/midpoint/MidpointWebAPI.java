@@ -23,12 +23,10 @@ public interface MidpointWebAPI {
 
 
     @POST("users/{oid}")
-    Call<PostPropertyResponse> postChangeActivation(
+    Call<PostPropertyResponse> postChangeUser(
             @Header("Authorization") String authHeader,
             @Path("oid") String userOid,
             @Body RequestBody body
     );
-
-
 
 }
