@@ -1,6 +1,8 @@
 package org.example.midpoint;
 
-import org.example.midpoint.models.GetMidpointObjectsResponse;
+import okhttp3.RequestBody;
+import org.example.midpoint.models.GetMidpointResourcesResponse;
+import org.example.midpoint.models.GetMidpointUserResponse;
 import org.example.midpoint.models.PostPropertyResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -9,20 +11,22 @@ public interface MidpointWebAPI {
 
     @Headers({"Accept: application/json"})
     @GET("users")
-    Call<GetMidpointObjectsResponse> getUsers(
+    Call<GetMidpointUserResponse> getUsers(
             @Header("Authorization") String authHeader
     );
 
     @Headers({"Accept: application/json"})
     @GET("resources")
-    Call<GetMidpointObjectsResponse> getResources(
+    Call<GetMidpointResourcesResponse> getResources(
         @Header("Authorization") String authHeader
     );
 
+
     @POST("users/{oid}")
-    Call<PostPropertyResponse> postChangeUserActivation (
+    Call<PostPropertyResponse> postChangeUser(
             @Header("Authorization") String authHeader,
             @Path("oid") String userOid,
-            @Body String body
-                );
+            @Body RequestBody body
+    );
+
 }

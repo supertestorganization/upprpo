@@ -10,9 +10,10 @@ public class JiraConfig {
     public static String API_TOKEN = null;
     public static String BASE_URL = null;
 
+
     public static void loadConfig() throws IOException{
         Properties properties = new Properties();
-        InputStream ins = Config.class.getResourceAsStream("/jira_config.properties");
+        InputStream ins = MidpointConfig.class.getResourceAsStream("/jira_config.properties");
         properties.load(ins);
         BASE_URL = properties.getProperty("base_url");
         LOGIN = properties.getProperty("login");

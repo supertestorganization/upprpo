@@ -1,8 +1,5 @@
 package org.example.midpoint;
 
-import org.example.midpoint.exceptions.BadResource;
-import org.example.midpoint.exceptions.BadUser;
-
 import java.io.IOException;
 
 public interface MidpointProvider {

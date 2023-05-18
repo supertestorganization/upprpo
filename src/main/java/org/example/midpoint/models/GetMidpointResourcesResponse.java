@@ -2,11 +2,11 @@ package org.example.midpoint.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class GetMidpointObjectsResponse {
+public class GetMidpointResourcesResponse {
     @SerializedName("object")
-    Obj obj;
+    ObjRes objRes;
 
-    public Obj getObj() {
-        return obj;
+    public ObjRes getObjRes() {
+        return objRes;
     }
 }
