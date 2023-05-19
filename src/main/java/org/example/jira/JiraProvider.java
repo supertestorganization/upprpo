@@ -10,6 +10,6 @@ public interface JiraProvider {
 
     void makeTicketFailed(String ticketKey) throws IOException;
 
-    void changeTicketDescription(String ticketKey, String newDescription) throws IOException;
+    void setTicketDescription(String ticketKey, String newDescription) throws IOException;
 
 }
