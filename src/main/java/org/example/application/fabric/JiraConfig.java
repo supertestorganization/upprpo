@@ -9,6 +9,9 @@ public class JiraConfig {
     public static String LOGIN = null;
     public static String API_TOKEN = null;
     public static String BASE_URL = null;
+    public static String SEARCH_JQL = null;
+    public static String TRANSITION_TEMPLATE = null;
+    public static String DESCRIPTION_TEMPLATE = null;
 
 
     public static void loadConfig() throws IOException{
@@ -18,5 +21,8 @@ public class JiraConfig {
         BASE_URL = properties.getProperty("base_url");
         LOGIN = properties.getProperty("login");
         API_TOKEN = properties.getProperty("api_token");
+        SEARCH_JQL = properties.getProperty("search_jql");
+        TRANSITION_TEMPLATE = properties.getProperty("transition_template");
+        DESCRIPTION_TEMPLATE = properties.getProperty("description_template");
     }
 }
