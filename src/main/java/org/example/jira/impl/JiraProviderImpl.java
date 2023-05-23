@@ -1,11 +1,7 @@
 package org.example.jira.impl;
 
-import okhttp3.Credentials;
-import org.example.application.fabric.JiraConfig;
 import org.example.jira.JiraProvider;
 import org.example.jira.Ticket;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
 
@@ -14,18 +10,9 @@ public class JiraProviderImpl implements JiraProvider {
     private final TicketScanner ticketScanner;
     private final TicketChanger ticketChanger;
 
-    public JiraProviderImpl() {
-        String token = JiraConfig.API_TOKEN;
-        String username = JiraConfig.LOGIN;
-        String authToken = Credentials.basic(username, token);
-
-        String baseUrl = JiraConfig.BASE_URL;
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(GsonConverterFactory.create()).build();
-
-        JiraWebAPI jiraWebAPI = retrofit.create(JiraWebAPI.class);
+    public JiraProviderImpl(JiraWebAPI jiraWebAPI, String authToken) {
         this.ticketScanner = new TicketScanner(jiraWebAPI, authToken);
         this.ticketChanger = new TicketChanger(jiraWebAPI, authToken);
-
     }
 
     @Override
