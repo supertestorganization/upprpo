@@ -10,3 +10,6 @@ https://teamnsu.atlassian.net/jira/software/projects/NSU/boards/1
 
 confluence
 https://teamnsu.atlassian.net/wiki/spaces/upprpo/overview
+
+SonarCloue
+https://sonarcloud.io/project/overview?id=supertestorganization_upprpo
