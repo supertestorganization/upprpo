@@ -3,6 +3,7 @@ package org.example.application;
 import org.example.jira.JiraProvider;
 import org.example.jira.Ticket;
 import org.example.midpoint.MidpointProvider;
+import org.example.midpoint.OperationResult;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -27,7 +28,14 @@ public class App implements Runnable {
                 try {
                     Iterable<Ticket> tickets = jiraProvider.getTickets();
                     for (Ticket ticket : tickets) {
-                        handleTicket(ticket);
+                        OperationResult result = handleTicket(ticket);
+                        if (OperationResult.OPERATION_STATUS.SUCCEED.equals(result.status())) {
+                            jiraProvider.makeTicketDone(ticket.getKey());
+                            jiraProvider.setTicketDescription(ticket.getKey(), result.msg());
+                        } else {
+                            jiraProvider.makeTicketFailed(ticket.getKey());
+                            jiraProvider.setTicketDescription(ticket.getKey(), result.msg());
+                        }
                     }
 
                 } catch (IOException e) {
@@ -42,25 +50,25 @@ public class App implements Runnable {
         timer.cancel();
     }
 
-    private void handleTicket(Ticket ticket) throws IOException {
+    private OperationResult handleTicket(Ticket ticket) throws IOException {
         switch (ticket.getAction()) {
             case DISABLE -> {
                 if (null != ticket.getResourceName()) {
-                    midpointProvider.disableAccount(ticket.getUserName(), ticket.getResourceName());
+                    return midpointProvider.disableAccount(ticket.getUserName(), ticket.getResourceName());
                 } else {
-                    midpointProvider.disableUser(ticket.getUserName());
+                    return midpointProvider.disableUser(ticket.getUserName());
                 }
             }
 
             case ENABLE -> {
                 if (null != ticket.getResourceName()) {
-                    midpointProvider.activateAccount(ticket.getUserName(), ticket.getResourceName());
+                    return midpointProvider.activateAccount(ticket.getUserName(), ticket.getResourceName());
                 } else {
-                    midpointProvider.activateUser(ticket.getUserName());
+                    return midpointProvider.activateUser(ticket.getUserName());
                 }
             }
             default -> {
-                //nothing to do
+                return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "Unknown action");
             }
         }
     }
