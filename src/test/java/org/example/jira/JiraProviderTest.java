@@ -2,6 +2,7 @@ package org.example.jira;
 
 import com.google.gson.Gson;
 import okhttp3.ResponseBody;
+import org.example.application.fabric.JiraConfig;
 import org.example.jira.impl.JiraProviderImpl;
 import org.example.jira.impl.JiraWebAPI;
 import org.example.jira.impl.model.ticket.TicketSearchResponse;
@@ -28,6 +29,8 @@ public class JiraProviderTest {
     @Before
     public void init() throws IOException{
         jiraWebAPI = Mockito.mock(JiraWebAPI.class, Answers.RETURNS_DEEP_STUBS);
+        JiraConfig.loadConfig();
+
 
         String json = "{\"sections\":[{\"label\":\"History Search\",\"sub\":\"Showing 1 of 1 matching issues\",\"id\":\"hs\",\"issues\":[{\"id\":10037,\"key\":\"NSU-38\",\"keyHtml\":\"NSU-38\",\"img\":\"/rest/api/2/universal_avatar/view/type/issuetype/avatar/10300?size=medium\",\"summary\":\"DISABLE |USERNAME|RESOURCE\",\"summaryText\":\"DISABLE |USERNAME|RESOURCE\"}]}]}";
         TicketSearchResponse getTicketResponse = gson.fromJson(json, TicketSearchResponse.class);
