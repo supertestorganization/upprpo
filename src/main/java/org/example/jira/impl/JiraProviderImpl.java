@@ -24,7 +24,7 @@ public class JiraProviderImpl implements JiraProvider {
     public void makeTicketDone(String ticketKey) throws IOException {
         var response = ticketChanger.makeTicketDone(ticketKey);
         if (isBadCode(response.code())){
-            throw new IOException("Bad code: " + response.code() +'\n'+ response.message());
+            throw new IOException(("Moving ticket %s to Done failed: code " + response.code() +'\n'+ response.message()).formatted(ticketKey));
         }
     }
 
@@ -32,7 +32,7 @@ public class JiraProviderImpl implements JiraProvider {
     public void makeTicketFailed(String ticketKey) throws IOException {
         var response = ticketChanger.makeTicketFailed(ticketKey);
         if (isBadCode(response.code())){
-            throw new IOException("Bad code: " + response.code() +'\n'+ response.message());
+            throw new IOException(("Moving ticket %s to Failed failed: code" + response.code() +'\n'+ response.message()).formatted(ticketKey));
         }
     }
 
@@ -40,7 +40,7 @@ public class JiraProviderImpl implements JiraProvider {
     public void setTicketDescription(String ticketKey, String newDescription) throws IOException {
         var response = ticketChanger.setTicketDescription(ticketKey,newDescription);
         if (isBadCode(response.code())){
-            throw new IOException("Bad code: " + response.code() +'\n'+ response.message());
+            throw new IOException(("Setting ticket %s description failed: code" + response.code() +'\n'+ response.message()).formatted(ticketKey));
         }
     }
 

@@ -38,9 +38,8 @@ public class App implements Runnable {
                         }
                     }
 
-                } catch (IOException e) {
-                    //stub, add exception handling later
-                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
                 }
             }
         }, 0, 5000);

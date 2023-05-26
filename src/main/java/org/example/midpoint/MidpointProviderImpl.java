@@ -17,7 +17,7 @@ import java.util.List;
 public class MidpointProviderImpl implements MidpointProvider {
     Retrofit retrofit;
     private final MidpointWebAPI midpointWebAPI;
-    private final String baseUrl = MidpointConfig.MIDPOINT_BASE_URL;
+    private static final String baseUrl = MidpointConfig.MIDPOINT_BASE_URL;
     private final String enableUserBody = MidpointConfig.ENABLE_USER_BODY;
     private final String disableUserBody = MidpointConfig.DISABLE_USER_BODY;
     private final String enableAccountBody = MidpointConfig.ENABLE_ACCOUNT_BODY;
@@ -75,7 +75,7 @@ public class MidpointProviderImpl implements MidpointProvider {
         }
         var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), disableAccountBody.formatted(assignmentId));
         midpointWebAPI.postChangeUser(authToken, user.getOid(), body).execute();
-        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "Account in %s of user %s is disabled".formatted(resource.getResourceName(), user.getName()));
+        return new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "Activation of account in %s of user %s is changed".formatted(resource.getResourceName(), user.getName()));
     }
 
 
@@ -96,7 +96,7 @@ public class MidpointProviderImpl implements MidpointProvider {
         }
         var body = RequestBody.create(okhttp3.MediaType.parse(mediaFormat), enableUserBody);
         midpointWebAPI.postChangeUser(authToken, user.getOid(), body).execute();
-        return  new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User enabled");
+        return  new OperationResult(OperationResult.OPERATION_STATUS.SUCCEED, "User activation changed");
     }
 
     private MidpointUser getUser(String name) throws IOException {
@@ -121,7 +121,7 @@ public class MidpointProviderImpl implements MidpointProvider {
 
     private MidpointUser findUserByName(String name, List<MidpointUser> userList) {
         for (MidpointUser midpointUser : userList) {
-            if (midpointUser.getName().equals(name)) {
+            if (midpointUser.getName().replace(" ", "").equals(name)) {
                 return midpointUser;
             }
         }
@@ -130,7 +130,7 @@ public class MidpointProviderImpl implements MidpointProvider {
 
     private MidpointResource findResource(String name, List<MidpointResource> resourceList) {
         for (MidpointResource midpointResource : resourceList) {
-            if (midpointResource.getResourceName().equals(name)) {
+            if (midpointResource.getResourceName().replace(" ", "").equals(name)) {
                 return midpointResource;
             }
         }
