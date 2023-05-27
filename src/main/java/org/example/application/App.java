@@ -1,5 +1,6 @@
 package org.example.application;
 
+import lombok.extern.log4j.Log4j2;
 import org.example.jira.JiraProvider;
 import org.example.jira.Ticket;
 import org.example.midpoint.MidpointProvider;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@Log4j2
 public class App implements Runnable {
     private final JiraProvider jiraProvider;
     private final MidpointProvider midpointProvider;
@@ -33,13 +35,14 @@ public class App implements Runnable {
                             jiraProvider.makeTicketDone(ticket.getKey());
                             jiraProvider.setTicketDescription(ticket.getKey(), result.msg());
                         } else {
+                            log.info("Failed to process ticket: " + ticket.getKey() + '\n' + result.msg());
                             jiraProvider.makeTicketFailed(ticket.getKey());
                             jiraProvider.setTicketDescription(ticket.getKey(), result.msg());
                         }
                     }
 
                 } catch (Exception e) {
-                    System.err.println(e.getMessage());
+                    log.warn(e.getMessage());
                 }
             }
         }, 0, 5000);
@@ -67,6 +70,7 @@ public class App implements Runnable {
                 }
             }
             default -> {
+                log.info("Caught bad ticket: "+ ticket.getAction().name());
                 return new OperationResult(OperationResult.OPERATION_STATUS.FAILED, "Unknown action");
             }
         }
