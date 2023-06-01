@@ -1,3 +1,5 @@
+package org.example.midpoint.models;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,8 +34,8 @@ public class MidpointUserTest {
     public void testGetAssignmentList() {
         MidpointUser user = new MidpointUser();
         List<Assignment> assignments = new ArrayList<>();
-        assignments.add(new Assignment("role1"));
-        assignments.add(new Assignment("role2"));
+        assignments.add(new Assignment());
+        assignments.add(new Assignment());
         user.assignments = assignments;
 
         List<Assignment> result = user.getAssignmentList();

@@ -1,3 +1,5 @@
+package org.example.midpoint.models;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,8 +12,8 @@ public class ObjResTest {
     public void testGetMidpointResources() {
         ObjRes objRes = new ObjRes();
         List<MidpointResource> resources = new ArrayList<>();
-        resources.add(new MidpointResource("1", "Resource 1"));
-        resources.add(new MidpointResource("2", "Resource 2"));
+        resources.add(new MidpointResource());
+        resources.add(new MidpointResource());
         objRes.resourceObjs = resources;
 
         List<MidpointResource> result = objRes.getMidpointResources();

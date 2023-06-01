@@ -1,3 +1,5 @@
+package org.example.midpoint.models;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,8 +12,8 @@ public class ObjUsersTest {
     public void testGetMidpointObjectsList() {
         ObjUsers objUsers = new ObjUsers();
         List<MidpointUser> users = new ArrayList<>();
-        users.add(new MidpointUser("1", "John Doe"));
-        users.add(new MidpointUser("2", "Jane Smith"));
+        users.add(new MidpointUser());
+        users.add(new MidpointUser());
         objUsers.midpointUserList = users;
 
         List<MidpointUser> result = objUsers.getMidpointObjectsList();
