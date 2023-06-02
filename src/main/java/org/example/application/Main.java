@@ -14,8 +14,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         try {
-            MidpointConfig.loadConfig();
-            JiraConfig.loadConfig();
+            MidpointConfig.loadConfigSecrets();
+            JiraConfig.loadConfigSecrets();
         } catch (IOException e){
             log.error("Unable to load configs: " + e.getLocalizedMessage());
             throw e;
